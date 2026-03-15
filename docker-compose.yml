@@ -5,8 +5,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: url-shortener-redis
-    ports:
-      - "6379:6379"
+   
     volumes:
       - redis_data:/data
 
@@ -14,8 +13,7 @@ services:
   mongo_a:
     image: mongo:7
     container_name: mongo_a
-    ports:
-      - "27021:27017"
+    
     volumes:
       - mongo_a_data:/data/db
 
@@ -23,8 +21,7 @@ services:
   mongo_b:
     image: mongo:7
     container_name: mongo_b
-    ports:
-      - "27022:27017"
+    
     volumes:
       - mongo_b_data:/data/db
 
@@ -32,8 +29,7 @@ services:
   mongo_c:
     image: mongo:7
     container_name: mongo_c
-    ports:
-      - "27023:27017"
+    
     volumes:
       - mongo_c_data:/data/db
 
@@ -41,8 +37,7 @@ services:
   mongo_d:
     image: mongo:7
     container_name: mongo_d
-    ports:
-      - "27024:27017"
+    
     volumes:
       - mongo_d_data:/data/db
 
@@ -50,8 +45,7 @@ services:
     build: ./services/url_creation_service
     image: url_shortener_service:latest
     container_name: url_creation_service_a
-    ports:
-      - "8000:8000"
+    
     environment:
       - MACHINE_ID=a
       - REDIS_HOST=redis
@@ -71,8 +65,7 @@ services:
   url_creation_service_b:
     image: url_shortener_service:latest
     container_name: url_creation_service_b
-    ports:
-      - "8001:8000"
+    
     environment:
       - MACHINE_ID=b
       - REDIS_HOST=redis
@@ -88,8 +81,7 @@ services:
   url_creation_service_c:
     image: url_shortener_service:latest
     container_name: url_creation_service_c
-    ports:
-      - "8002:8000"
+    
     environment:
       - MACHINE_ID=c
       - REDIS_HOST=redis
@@ -103,8 +95,7 @@ services:
   url_creation_service_d:
     image: url_shortener_service:latest
     container_name: url_creation_service_d
-    ports:
-      - "8003:8000"
+   
     environment:
       - MACHINE_ID=d
       - REDIS_HOST=redis
@@ -117,8 +108,7 @@ services:
   url_redirect_service:
     build: ./services/url_redirect_service
     container_name: url_redirect_service
-    ports:
-      - "8004:8000"
+    
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -132,6 +122,20 @@ services:
       - mongo_b
       - mongo_c
       - mongo_d
+
+  load_balancer:
+    image: nginx:alpine
+    container_name: url_shortener_lb
+    ports:
+      - "80:80"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - url_creation_service_a
+      - url_creation_service_b
+      - url_creation_service_c
+      - url_creation_service_d
+      - url_redirect_service
 
 
 volumes:

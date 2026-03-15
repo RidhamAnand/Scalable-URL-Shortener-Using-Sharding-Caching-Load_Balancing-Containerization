@@ -19,14 +19,14 @@ class UrlRequest(BaseModel):
 class UrlResponse(BaseModel):
     short_url: str
 
-app = FastAPI()
+app = FastAPI(root_path="/create")
 register_exception_handlers(app)
 machine_id = os.getenv("MACHINE_ID")
 
 if machine_id is None:
     raise Exception("MACHINE_ID environment variable is required")
 
-@app.post("/create", status_code=status.HTTP_201_CREATED)
+@app.post("/", status_code=status.HTTP_201_CREATED)
 async def return_short_url(req: UrlRequest) -> UrlResponse:
     long_url = req.long_url.strip()
     if not long_url:

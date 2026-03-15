@@ -55,20 +55,6 @@ def fetch_long_url(short_url: str) -> tuple[str, str]:
     return long_url, "mongo"
 
 
-@app.get("/redirect/{short_url}")
-def redirect_to_long_url(
-    short_url: Annotated[str, Path()]
-):
-
-    try:
-        long_url, _ = fetch_long_url(short_url)
-        return RedirectResponse(url=normalize_redirect_url(long_url), status_code=301)
-    except UrlNotFoundError:
-        raise
-    except (CacheLookupError, DataStoreLookupError):
-        raise
-    except Exception as exc:
-        raise UnexpectedServiceError() from exc
 
 
 @app.get("/resolve/{short_url}")
@@ -111,3 +97,20 @@ def resolve_long_url(
         raise
     except Exception as exc:
         raise UnexpectedServiceError() from exc
+
+
+@app.get("/{short_url}")
+def redirect_to_long_url(
+    short_url: Annotated[str, Path()]
+):
+
+    try:
+        long_url, _ = fetch_long_url(short_url)
+        return RedirectResponse(url=normalize_redirect_url(long_url), status_code=301)
+    except UrlNotFoundError:
+        raise
+    except (CacheLookupError, DataStoreLookupError):
+        raise
+    except Exception as exc:
+        raise UnexpectedServiceError() from exc
+
