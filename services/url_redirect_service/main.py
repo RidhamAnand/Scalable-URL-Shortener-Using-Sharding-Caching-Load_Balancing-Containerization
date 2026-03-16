@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI, Path
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 import logging
@@ -19,6 +21,20 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 register_exception_handlers(app)
+
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def normalize_redirect_url(url: str) -> str:

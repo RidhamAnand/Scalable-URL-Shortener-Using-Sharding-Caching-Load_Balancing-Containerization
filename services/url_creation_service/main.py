@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from utilities import redis_client, shard_router
 from utilities.exceptions import (
@@ -21,6 +22,21 @@ class UrlResponse(BaseModel):
 
 app = FastAPI(root_path="/create")
 register_exception_handlers(app)
+
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 machine_id = os.getenv("MACHINE_ID")
 
 if machine_id is None:

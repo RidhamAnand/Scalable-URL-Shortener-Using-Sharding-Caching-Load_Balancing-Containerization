@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+/build
+/dist
+
+# local development
+.env.development.local
+.env.test.local
+.cache
+.parcel-cache
+.vitepress-temp
+.idea
+.vscode
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
