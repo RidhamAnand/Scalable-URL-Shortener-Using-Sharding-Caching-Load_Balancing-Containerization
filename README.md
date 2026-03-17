@@ -68,8 +68,8 @@ flowchart LR
     LB -->|POST /create/| C3[Creation Service C]
     LB -->|POST /create/| C4[Creation Service D]
 
-    LB -->|GET /resolve/{short_url}| R[Redirect Service]
-    LB -->|GET /{short_url}| R
+    LB -->|GET /resolve/:short_url| R[Redirect Service]
+    LB -->|GET /:short_url| R
 
     C1 --> RS[(Redis)]
     C2 --> RS
