@@ -130,7 +130,7 @@ sequenceDiagram
     participant Redis
     participant MongoShard as Mongo Shard
 
-    Client->>LB: GET /resolve/{short_url}
+    Client->>LB: GET /resolve/:short_url
     LB->>RS: Forward request
     RS->>Redis: GET short_url (if cache enabled)
     alt Cache Hit
@@ -155,7 +155,7 @@ sequenceDiagram
     participant Redis
     participant MongoShard as Mongo Shard
 
-    Browser->>LB: GET /{short_url}
+    Browser->>LB: GET /:short_url
     LB->>RS: Forward request
     RS->>Redis: GET short_url (if enabled)
     alt Cache Hit
@@ -221,7 +221,7 @@ Errors:
 
 ### 7.2 Resolve API
 Endpoint:
-- GET /resolve/{short_url}
+- GET /resolve/:short_url
 
 Success response (200):
 ```json
@@ -242,7 +242,7 @@ Errors:
 
 ### 7.3 Redirect API
 Endpoint:
-- GET /{short_url}
+- GET /:short_url
 
 Success response:
 - HTTP 301 with Location header set to normalized long URL
