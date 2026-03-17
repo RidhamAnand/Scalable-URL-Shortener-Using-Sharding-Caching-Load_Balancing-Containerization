@@ -110,6 +110,7 @@ services:
     container_name: url_redirect_service
     
     environment:
+      - ENABLE_REDIS_CACHE=${ENABLE_REDIS_CACHE:-true}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGO_A_URL=mongodb://mongo_a:27017
@@ -137,6 +138,40 @@ services:
       - url_creation_service_d
       - url_redirect_service
 
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: url_shortener_prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - url_creation_service_a
+      - url_creation_service_b
+      - url_creation_service_c
+      - url_creation_service_d
+      - url_redirect_service
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    container_name: url_shortener_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infrastructure/monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./infrastructure/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
 
 
 volumes:
@@ -145,3 +180,5 @@ volumes:
   mongo_b_data:
   mongo_c_data:
   mongo_d_data:
+  prometheus_data:
+  grafana_data:

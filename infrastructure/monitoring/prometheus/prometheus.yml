@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - prometheus:9090
+
+  - job_name: url_creation_service
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - url_creation_service_a:8000
+          - url_creation_service_b:8000
+          - url_creation_service_c:8000
+          - url_creation_service_d:8000
+
+  - job_name: url_redirect_service
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - url_redirect_service:8000

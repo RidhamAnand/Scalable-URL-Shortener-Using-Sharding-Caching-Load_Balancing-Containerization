@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from prometheus_fastapi_instrumentator import Instrumentator
 from utilities import redis_client, shard_router
 from utilities.exceptions import (
     InvalidUrlInputError,
@@ -22,6 +23,7 @@ class UrlResponse(BaseModel):
 
 app = FastAPI(root_path="/create")
 register_exception_handlers(app)
+Instrumentator().instrument(app).expose(app)
 
 cors_origins = [
     origin.strip()
